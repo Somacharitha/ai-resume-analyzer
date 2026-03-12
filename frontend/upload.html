@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Resume - AI Resume Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 1rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.5);
+            margin-bottom: 2rem;
+        }
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        .file-info {
+            margin-top: 1rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+        .loader {
+            display: none;
+            border: 4px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container flex justify-between items-center">
+            <a href="index.html" class="nav-brand">AI <span class="text-gradient">Analyzer</span></a>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="#" id="logoutBtn" style="color: var(--text-secondary);">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container" style="max-width: 800px; margin-top: 4rem;">
+        <h2 class="text-center text-gradient" style="font-size: 2.5rem; margin-bottom: 1rem;">Analyze Your Resume</h2>
+        <p class="text-center text-secondary" style="margin-bottom: 3rem;">Upload your PDF resume to get instant feedback, score, and job match percentages.</p>
+
+        <div class="form-card" style="max-width: 100%; margin: 0 auto;">
+            <div id="alertBox" class="alert"></div>
+
+            <div class="upload-area" id="dropZone">
+                <div class="upload-icon">📄</div>
+                <h3>Drag & Drop your resume</h3>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">or click to browse your files (PDF only)</p>
+                <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                <div id="fileInfo" class="file-info"></div>
+            </div>
+
+            <button id="analyzeBtn" class="btn btn-primary w-full" style="font-size: 1.125rem; display: none;">Analyze Resume</button>
+            <div id="loader" class="loader"></div>
+        </div>
+    </main>
+
+    <script src="static/js/auth.js"></script>
+    <script src="static/js/upload.js"></script>
+    <script>
+        // Protect this route
+        requireAuth();
+
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

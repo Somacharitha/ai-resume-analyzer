@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AI Resume Analyzer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container flex justify-between items-center">
+            <a href="index.html" class="nav-brand">AI <span class="text-gradient">Analyzer</span></a>
+            <ul class="nav-links">
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <div class="form-card" style="margin-top: 6rem;">
+            <h2 class="text-center text-gradient" style="margin-bottom: 2rem;">Create Account</h2>
+            
+            <div id="alertBox" class="alert"></div>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" class="form-input" required placeholder="John Doe">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-input" required placeholder="john@example.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-input" required placeholder="••••••••">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" class="form-input" required placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full mt-4">Sign Up</button>
+                
+                <p class="text-center mt-4" style="color: var(--text-secondary); margin-top: 1.5rem;">
+                    Already have an account? <a href="login.html" style="color: var(--primary-color); text-decoration: none;">Log in</a>
+                </p>
+            </form>
+        </div>
+    </main>
+
+    <script src="static/js/auth.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const alertBox = document.getElementById('alertBox');
+
+            if (password !== confirmPassword) {
+                showAlert(alertBox, 'Passwords do not match', 'error');
+                return;
+            }
+
+            const success = await handleSignup(name, email, password);
+            if (success) {
+                showAlert(alertBox, 'Account created successfully! Redirecting...', 'success');
+                setTimeout(() => window.location.href = 'login.html', 1500);
+            } else {
+                showAlert(alertBox, 'Failed to create account. User may exist.', 'error');
+            }
+        });
+
+        function showAlert(element, message, type) {
+            element.textContent = message;
+            element.className = 'alert ' + type;
+        }
+    </script>
+</body>
+</html>

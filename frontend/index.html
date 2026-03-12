@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Analyzer - Unlock Your Career Potential</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        /* Additional Home Page specific styles */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        .feature-card {
+            background: var(--surface-color);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.2);
+            border-color: var(--primary-color);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+        .glow-effect {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            z-index: -1;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-effect"></div>
+    <nav class="navbar">
+        <div class="container flex justify-between items-center">
+            <a href="index.html" class="nav-brand">AI <span class="text-gradient">Analyzer</span></a>
+            <ul class="nav-links">
+                <li><a href="login.html">Login</a></li>
+                <li><a href="signup.html" class="btn btn-primary">Get Started</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container hero">
+        <h1>Transform Your Resume with<br><span class="text-gradient">AI-Powered Insights</span></h1>
+        <p>Upload your resume, get matched with industry roles, discover missing skills, and receive actionable suggestions to land your dream job.</p>
+        
+        <div class="flex gap-4">
+            <a href="signup.html" class="btn btn-primary" style="font-size: 1.125rem; padding: 1rem 2rem;">Analyze My Resume Free</a>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>Comprehensive Scoring</h3>
+                <p>Get a quantifiable score on your resume based on your skills, project experience, and modern industry keywords.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3>Role Matching</h3>
+                <p>See how your profile stacks up against roles like Web Developer, Backend Engineer, Data Analyst, and AI Engineer.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔍</span>
+                <h3>Skill Gap Analysis</h3>
+                <p>Instantly spot the critical technologies missing from your resume that recruiters are looking for.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Check if logged in, change nav links
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                const navLinks = document.querySelector('.nav-links');
+                navLinks.innerHTML = `
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="upload.html" class="btn btn-primary">Analyze New Resume</a></li>
+                    <li><a href="#" id="logoutBtn" style="color: var(--text-secondary); margin-left: 1rem;">Logout</a></li>
+                `;
+
+                document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
