@@ -68,12 +68,12 @@
                 return;
             }
 
-            const success = await handleSignup(name, email, password);
-            if (success) {
+            const result = await handleSignup(name, email, password);
+            if (result && result.success) {
                 showAlert(alertBox, 'Account created successfully! Redirecting...', 'success');
                 setTimeout(() => window.location.href = 'login.html', 1500);
             } else {
-                showAlert(alertBox, 'Failed to create account. User may exist.', 'error');
+                showAlert(alertBox, result && result.message ? result.message : 'Failed to create account.', 'error');
             }
         });
 

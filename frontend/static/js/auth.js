@@ -13,14 +13,14 @@ async function handleSignup(name, email, password) {
         const data = await response.json();
         
         if (response.ok) {
-            return true;
+            return { success: true };
         } else {
             console.error('Signup error:', data.message);
-            return false;
+            return { success: false, message: data.message };
         }
     } catch (error) {
         console.error('Error during signup:', error);
-        return false;
+        return { success: false, message: 'Network or server error' };
     }
 }
 

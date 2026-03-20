@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const fileInfo = document.getElementById('fileInfo');
@@ -8,13 +9,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedFile = null;
 
-    // Click to upload
+    // Click upload
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // File input change
+    // File select
     fileInput.addEventListener('change', handleFileSelect);
 
-    // Drag and drop events
+    // Drag drop
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
         dropZone.classList.add('dragover');
@@ -27,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dropZone.addEventListener('drop', (e) => {
         e.preventDefault();
         dropZone.classList.remove('dragover');
-        
+
         if (e.dataTransfer.files.length) {
             fileInput.files = e.dataTransfer.files;
             handleFileSelect({ target: fileInput });
@@ -36,83 +37,125 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function handleFileSelect(e) {
         const file = e.target.files[0];
-        
+
         if (!file) return;
 
         if (file.type !== 'application/pdf') {
-            showAlert('Please upload a PDF file only.', 'error');
-            resetUpload();
-            return;
-        }
-
-        if (file.size > 5 * 1024 * 1024) {
-            showAlert('File size must be less than 5MB.', 'error');
-            resetUpload();
+            showAlert('Upload PDF only', 'error');
             return;
         }
 
         selectedFile = file;
-        fileInfo.innerHTML = `📄 ${file.name} ( ${(file.size / 1024 / 1024).toFixed(2)} MB )`;
+        fileInfo.innerHTML = `📄 ${file.name}`;
         analyzeBtn.style.display = 'block';
         alertBox.style.display = 'none';
     }
 
-    function resetUpload() {
-        selectedFile = null;
-        fileInput.value = '';
-        fileInfo.innerHTML = '';
-        analyzeBtn.style.display = 'none';
+    function showAlert(msg, type) {
+        alertBox.innerText = msg;
+        alertBox.className = "alert " + type;
+        alertBox.style.display = "block";
     }
 
-    function showAlert(message, type) {
-        alertBox.textContent = message;
-        alertBox.className = 'alert ' + type;
-        alertBox.style.display = 'block';
-    }
-
-    // Submit file to API
+    // 🚀 MAIN FUNCTION
     analyzeBtn.addEventListener('click', async () => {
+
         if (!selectedFile) return;
 
-        const token = getToken();
+        // 🔥 FIXED TOKEN
+        const token = localStorage.getItem("token")?.replace(/"/g, "");
+        console.log("TOKEN:", token);
+
         if (!token) {
-            showAlert('Session expired. Please log in again.', 'error');
-            setTimeout(() => window.location.href = 'login.html', 1500);
+            showAlert("Login again!", "error");
+            window.location.href = "login.html";
             return;
         }
 
         const formData = new FormData();
-        formData.append('resume', selectedFile);
+        formData.append("resume", selectedFile);
 
-        // UI Loading State
-        analyzeBtn.style.display = 'none';
-        loader.style.display = 'block';
+        loader.style.display = "block";
+        analyzeBtn.style.display = "none";
 
         try {
-            const response = await fetch('http://localhost:5000/api/resume/upload', {
-                method: 'POST',
+            const response = await fetch("http://localhost:5000/api/resume/upload", {
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`
-                    // Do not set Content-Type, browser sets it automatically with boundary for FormData
+                    Authorization: `Bearer ${token}`
                 },
                 body: formData
             });
 
             const data = await response.json();
+            console.log("API RESPONSE:", data);
 
-            if (response.ok) {
-                // Successfully parsed, redirect to dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                showAlert(data.message || 'Error uploading file.', 'error');
-                analyzeBtn.style.display = 'block';
+            loader.style.display = "none";
+
+            if (!response.ok) {
+                showAlert(data.message || "Error", "error");
+                analyzeBtn.style.display = "block";
+                return;
             }
-        } catch (error) {
-            console.error('Upload Error:', error);
-            showAlert('Server error. Ensure backend is running.', 'error');
-            analyzeBtn.style.display = 'block';
-        } finally {
-            loader.style.display = 'none';
+
+            const result = data.analysis;
+
+            // 🔥 SHOW RESULT
+            document.getElementById("resultSection").style.display = "block";
+
+            document.getElementById("score").innerText = result.score;
+            document.getElementById("role").innerText = result.bestMatchRole;
+
+            // Skills
+            const skillsContainer = document.getElementById("skills");
+            skillsContainer.innerHTML = "";
+            result.detectedSkills.forEach(skill => {
+                const span = document.createElement("span");
+                span.className = "skill-tag";
+                span.innerText = skill;
+                skillsContainer.appendChild(span);
+            });
+
+            // Suggestions
+            const suggestions = document.getElementById("suggestions");
+            suggestions.innerHTML = "";
+            result.improvementSuggestions.forEach(s => {
+                const li = document.createElement("li");
+                li.innerText = s;
+                suggestions.appendChild(li);
+            });
+
+            // 🔥 GRAPH
+            renderChart(result.matchPercentages);
+
+        } catch (err) {
+            console.error(err);
+            showAlert("Server error", "error");
+            loader.style.display = "none";
+            analyzeBtn.style.display = "block";
         }
     });
+
+    // 📊 Chart
+    function renderChart(matchData) {
+
+        const ctx = document.getElementById("barChart").getContext("2d");
+
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: Object.keys(matchData),
+                datasets: [{
+                    label: "Match %",
+                    data: Object.values(matchData),
+                    backgroundColor: "#6366f1"
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+    }
 });

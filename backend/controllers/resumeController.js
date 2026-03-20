@@ -28,14 +28,14 @@ exports.uploadResume = async (req, res) => {
             VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *
         `;
         const analysisValues = [
-            resumeId,
-            analysis.score,
-            analysis.detectedSkills,
-            analysis.bestMatchRole,
-            JSON.stringify(analysis.matchPercentages),
-            JSON.stringify(analysis.missingSkills),
-            analysis.improvementSuggestions
-        ];
+    resumeId,
+    analysis.score,
+    JSON.stringify(analysis.detectedSkills),   // ✅ FIXED
+    analysis.bestMatchRole,
+    JSON.stringify(analysis.matchPercentages),
+    JSON.stringify(analysis.missingSkills),
+    JSON.stringify(analysis.improvementSuggestions) // ✅ FIXED
+];
 
         const savedAnalysis = await db.query(analysisResultQuery, analysisValues);
 
